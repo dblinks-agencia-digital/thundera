@@ -5,7 +5,6 @@ import br.com.dblinks.thundera.navigator.elements.Link;
 import br.com.dblinks.thundera.navigator.page.Page;
 import br.com.dblinks.thundera.navigator.page.PageReadyObserver;
 import br.com.dblinks.thundera.navigator.page.URL;
-import br.com.dblinks.thundera.util.WebDriverUtil;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.enterprise.event.Event;
@@ -49,17 +48,17 @@ public class Navigator implements NavigatorStrategy {
 
                     url = queue.take();
                 }
-            } catch (InterruptedException ex) {
+            } catch (InterruptedException | InstantiationException | IllegalAccessException ex) {
                 Logger.getLogger(Navigator.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
     }
 
-    private void runJob(URL url) {
+    private void runJob(URL url) throws InstantiationException, IllegalAccessException {
         runningJobs++;
 
         for (Class driverClass : applicationConfig.getDrivers()) {
-            WebDriver driver = WebDriverUtil.newInstance(driverClass);
+            WebDriver driver = (WebDriver) driverClass.newInstance();
             Page page = new Page(driver, url);
             pageReadyObserver.fire(new PageReadyObserver(page));
 

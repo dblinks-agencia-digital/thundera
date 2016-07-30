@@ -1,5 +1,6 @@
 package br.com.dblinks.thundera.util;
 
+import java.util.HashMap;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.edge.EdgeDriver;
@@ -9,20 +10,21 @@ import org.openqa.selenium.opera.OperaDriver;
 
 public class WebDriverUtil {
 
-    public static WebDriver newInstance(Class driverClass) {
-        if (driverClass == EdgeDriver.class) {
-            return new EdgeDriver();
-        }
-        if (driverClass == InternetExplorerDriver.class) {
-            return new InternetExplorerDriver();
-        }
-        if (driverClass == OperaDriver.class) {
-            return new OperaDriver();
-        }
-        if (driverClass == MarionetteDriver.class) {
-            return new MarionetteDriver();
+    private static final HashMap<Class, String> NAMES = new HashMap<>();
+
+    private static void populateNames() {
+        NAMES.put(EdgeDriver.class, "Edge");
+        NAMES.put(InternetExplorerDriver.class, "Internet Explorer");
+        NAMES.put(OperaDriver.class, "Opera");
+        NAMES.put(MarionetteDriver.class, "Firefox");
+        NAMES.put(ChromeDriver.class, "Chrome");
+    }
+
+    public static String getName(WebDriver driver) {
+        if (NAMES.isEmpty()) {
+            populateNames();
         }
 
-        return new ChromeDriver();
+        return NAMES.get(driver.getClass());
     }
 }

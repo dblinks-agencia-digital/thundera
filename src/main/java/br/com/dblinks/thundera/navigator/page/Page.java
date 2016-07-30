@@ -1,16 +1,30 @@
 package br.com.dblinks.thundera.navigator.page;
 
+import br.com.dblinks.thundera.actions.Screenshooter;
 import br.com.dblinks.thundera.navigator.elements.ElementStrategy;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.imageio.ImageIO;
+import org.apache.commons.io.IOUtils;
 import org.openqa.selenium.By;
+import org.openqa.selenium.JavascriptExecutor;
+import org.openqa.selenium.OutputType;
+import org.openqa.selenium.TakesScreenshot;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.remote.Augmenter;
 
-public class Page implements PageStrategy {
+public class Page implements PageStrategy, PageScreenshotStrategy {
 
     private final WebDriver driver;
     private final URL url;
@@ -31,8 +45,28 @@ public class Page implements PageStrategy {
     }
 
     @Override
-    public void close() {
-        driver.close();
+    public <T> T executeScript(String script, Object... args) {
+        return (T) ((JavascriptExecutor) driver).executeScript(script, args);
+    }
+
+    public <T> T executeScript(File file, Object... args) {
+        try {
+            String script = IOUtils.toString(new FileInputStream(file));
+            return executeScript(script, args);
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    @Override
+    public int getFullHeight() {
+        File file = new File(getClass().getClassLoader().getResource("js/page_height.js").getFile());
+        return ((Number) executeScript(file)).intValue();
+    }
+
+    @Override
+    public void scrollTo(Integer top) {
+        executeScript("scrollTo(0, " + top + ");");
     }
 
     @Override
@@ -58,6 +92,28 @@ public class Page implements PageStrategy {
         }
 
         return elements;
+    }
+
+    @Override
+    public void close() {
+        driver.close();
+    }
+
+    @Override
+    public BufferedImage takeScreenshot() {
+        TakesScreenshot takesScreenshot = (TakesScreenshot) new Augmenter().augment(driver);
+
+        ByteArrayInputStream imageArrayStream = null;
+        try {
+            imageArrayStream = new ByteArrayInputStream(takesScreenshot.getScreenshotAs(OutputType.BYTES));
+            return ImageIO.read(imageArrayStream);
+        } catch (IOException ex) {
+            Logger.getLogger(Screenshooter.class.getName()).log(Level.SEVERE, null, ex);
+        } finally {
+            IOUtils.closeQuietly(imageArrayStream);
+        }
+
+        return null;
     }
 
     @Override
