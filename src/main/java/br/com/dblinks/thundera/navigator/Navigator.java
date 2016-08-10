@@ -1,7 +1,7 @@
 package br.com.dblinks.thundera.navigator;
 
 import br.com.dblinks.thundera.config.ApplicationConfig;
-import br.com.dblinks.thundera.navigator.elements.Link;
+import br.com.dblinks.thundera.navigator.elements.Anchor;
 import br.com.dblinks.thundera.navigator.page.Page;
 import br.com.dblinks.thundera.navigator.page.PageReadyObserver;
 import br.com.dblinks.thundera.navigator.page.URL;
@@ -63,13 +63,13 @@ public class Navigator implements NavigatorStrategy {
             pageReadyObserver.fire(new PageReadyObserver(page));
 
             if (applicationConfig.getRecursive()) {
-                page.getElements(Link.class)
+                page.getElements(Anchor.class)
                         .stream()
-                        .filter((link) -> link.isToHost(applicationConfig.getHost()))
-                        .filter((link) -> !queue.contains(new URL(link.getHref())))
-                        .filter((link) -> !history.contains(new URL(link.getHref())))
-                        .forEach((link) -> {
-                            queue.add(new URL(link.getHref()));
+                        .filter((anchor) -> anchor.isRecursive(applicationConfig.getHost()))
+                        .filter((anchor) -> !queue.contains(new URL(anchor.getHref())))
+                        .filter((anchor) -> !history.contains(new URL(anchor.getHref())))
+                        .forEach((anchor) -> {
+                            queue.add(new URL(anchor.getHref()));
                         });
             }
 

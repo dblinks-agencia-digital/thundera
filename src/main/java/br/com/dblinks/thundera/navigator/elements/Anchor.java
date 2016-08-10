@@ -4,16 +4,16 @@ import br.com.dblinks.thundera.util.URLUtil;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 
-public class Link implements ElementStrategy {
+public class Anchor implements ElementStrategy {
 
     private WebElement element;
 
     private String href;
 
-    public Link() {
+    public Anchor() {
     }
 
-    public Link(WebElement element) {
+    public Anchor(WebElement element) {
         this.element = element;
 
         String elementHref = element.getAttribute("href");
@@ -27,7 +27,7 @@ public class Link implements ElementStrategy {
         return href;
     }
 
-    public Boolean isToHost(String host) {
+    public Boolean isRecursive(String host) {
         Boolean isLongEnough = getHref().length() > 1;
         Boolean isNotJavascript = !getHref().contains("javascript:");
         Boolean isNotHashTag = !getHref().contains("#");
