@@ -24,7 +24,7 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.remote.Augmenter;
 
-public class Page implements PageStrategy, PageScreenshotStrategy {
+public class Page implements PageStrategy {
 
     private final WebDriver driver;
     private final URL url;
@@ -70,6 +70,23 @@ public class Page implements PageStrategy, PageScreenshotStrategy {
     }
 
     @Override
+    public BufferedImage takeScreenshot() {
+        TakesScreenshot takesScreenshot = (TakesScreenshot) new Augmenter().augment(driver);
+
+        ByteArrayInputStream imageArrayStream = null;
+        try {
+            imageArrayStream = new ByteArrayInputStream(takesScreenshot.getScreenshotAs(OutputType.BYTES));
+            return ImageIO.read(imageArrayStream);
+        } catch (IOException ex) {
+            Logger.getLogger(Screenshooter.class.getName()).log(Level.SEVERE, null, ex);
+        } finally {
+            IOUtils.closeQuietly(imageArrayStream);
+        }
+
+        return null;
+    }
+
+    @Override
     public <T> List<T> getElements(Class<T> elementClass) {
         if (elementClass.isInstance(ElementStrategy.class)) {
             throw new IllegalArgumentException();
@@ -97,23 +114,6 @@ public class Page implements PageStrategy, PageScreenshotStrategy {
     @Override
     public void close() {
         driver.close();
-    }
-
-    @Override
-    public BufferedImage takeScreenshot() {
-        TakesScreenshot takesScreenshot = (TakesScreenshot) new Augmenter().augment(driver);
-
-        ByteArrayInputStream imageArrayStream = null;
-        try {
-            imageArrayStream = new ByteArrayInputStream(takesScreenshot.getScreenshotAs(OutputType.BYTES));
-            return ImageIO.read(imageArrayStream);
-        } catch (IOException ex) {
-            Logger.getLogger(Screenshooter.class.getName()).log(Level.SEVERE, null, ex);
-        } finally {
-            IOUtils.closeQuietly(imageArrayStream);
-        }
-
-        return null;
     }
 
     @Override

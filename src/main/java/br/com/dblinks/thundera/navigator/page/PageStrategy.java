@@ -1,5 +1,6 @@
 package br.com.dblinks.thundera.navigator.page;
 
+import java.awt.image.BufferedImage;
 import java.util.List;
 
 public interface PageStrategy {
@@ -9,6 +10,8 @@ public interface PageStrategy {
     public int getFullHeight();
 
     public void scrollTo(Integer top);
+    
+    public BufferedImage takeScreenshot();
 
     public <T> List<T> getElements(Class<T> elementClass);
 

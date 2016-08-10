@@ -6,6 +6,4 @@ public interface ElementStrategy {
 
     public By getSelector();
 
-    public Boolean isValid();
-    
 }

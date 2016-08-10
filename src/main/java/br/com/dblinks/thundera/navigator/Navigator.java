@@ -65,8 +65,7 @@ public class Navigator implements NavigatorStrategy {
             if (applicationConfig.getRecursive()) {
                 page.getElements(Link.class)
                         .stream()
-                        .filter((link) -> link.isValid())
-                        .filter((link) -> link.getHref().contains(applicationConfig.getHost()))
+                        .filter((link) -> link.isToHost(applicationConfig.getHost()))
                         .filter((link) -> !queue.contains(new URL(link.getHref())))
                         .filter((link) -> !history.contains(new URL(link.getHref())))
                         .forEach((link) -> {

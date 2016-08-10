@@ -27,19 +27,19 @@ public class Link implements ElementStrategy {
         return href;
     }
 
-    @Override
-    public By getSelector() {
-        return By.tagName("a");
-    }
-
-    @Override
-    public Boolean isValid() {
+    public Boolean isToHost(String host) {
         Boolean isLongEnough = getHref().length() > 1;
         Boolean isNotJavascript = !getHref().contains("javascript:");
         Boolean isNotHashTag = !getHref().contains("#");
         Boolean isNotFile = !URLUtil.isFile(href);
+        Boolean isToHost = getHref().contains(host);
 
-        return isLongEnough && isNotJavascript && isNotHashTag && isNotFile;
+        return isLongEnough && isNotJavascript && isNotHashTag && isNotFile && isToHost;
+    }
+
+    @Override
+    public By getSelector() {
+        return By.tagName("a");
     }
 
     @Override
